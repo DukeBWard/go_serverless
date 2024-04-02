@@ -1,2 +1,2 @@
 # go_serverless
-API Gateway + DynamoDB + Lambda
+API, DynamoDB, Lambda
