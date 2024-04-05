@@ -1,8 +1,10 @@
 package user
 
 import (
+	"encoding/json"
 	"errors"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
@@ -12,6 +14,11 @@ import (
 var (
 	ErrorFailedToFetchRecord     = "failed to fetch record"
 	ErrorFailedToUnmarshalRecord = "failed to unmarshal record"
+	ErrorInvalidUserData         = "invalid user data"
+	ErrorInvalidEmail            = "invalid email"
+	ErrorUserAlreadyExists       = "user already exists"
+	ErrorCouldNotMarhsalItem     = "cannot marshal item"
+	ErrorCouldNotPutItem         = "cannot dynamo put item"
 )
 
 // you can use structs as the model
@@ -68,8 +75,40 @@ func FetchUsers(tableName string, dynaClient dynamodbiface.DynamoDBAPI) (*[]User
 	return item, nil
 }
 
-func CreateUser() {
+func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
+	*User, error) {
 
+	var user User
+
+	// the []byte() turns whatever is inside into a byte slice
+	if err := json.Unmarshal([]byte(req.Body), &user); err != nil {
+		return nil, errors.New(ErrorInvalidUserData)
+	}
+
+	if !validators.isEmailValid(user.Email) {
+		return nil, errors.New(ErrorInvalidEmail)
+	}
+
+	currUser, _ := FetchUser(user.Email, tableName, dynaClient)
+	if currUser != nil && len(currUser.Email) != 0 {
+		return nil, errors.New(ErrorUserAlreadyExists)
+	}
+
+	av, err := dynamodbattribute.MarshalMap(user)
+
+	if err != nil {
+		return nil, errors.New(ErrorCouldNotMarhsalItem)
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(tableName),
+	}
+
+	_, err = dynaClient.PutItem(input)
+	if err != nil {
+		return nil, errors.New(ErrorCouldNotPutItem)
+	}
 }
 
 func UpdateUser() {

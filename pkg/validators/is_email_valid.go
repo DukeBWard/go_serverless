@@ -8,4 +8,6 @@ func isEmailValid(email string) bool {
 	if len(email) < 3 || len(email) > 254 || !rxEmail.MatchString(email) {
 		return false
 	}
+
+	return true
 }
