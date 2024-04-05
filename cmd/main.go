@@ -1,16 +1,15 @@
 package main
 
 import (
-	"github.com/dukebward/go-serverless/pkg/handlers"
 	"os"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamo"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/dukebward/go_serverless/pkg/handlers"
 )
-
 
 /**
 * attached to a type (*string) indicates a pointer to the type.
@@ -24,6 +23,10 @@ import (
 & attached to a variable or expression (&v) indicates a reference.
  That is, create a pointer to the value of the variable or to the field.
 **/
+
+var (
+	dynaClient dynamodbiface.DynamoDBAPI
+)
 
 // * and & is standard C mem reference
 // & gets the mem address
