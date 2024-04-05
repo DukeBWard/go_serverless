@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/DukeBWard/go_serverless/pkg/user"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/dukebward/go_serverless/pkg/user"
 )
 
 var ErrorMethodNotAllowed = "method not allowed"
