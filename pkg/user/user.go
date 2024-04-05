@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/dukebward/go_serverless/pkg/validators"
 )
 
 var (
@@ -85,7 +86,7 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 		return nil, errors.New(ErrorInvalidUserData)
 	}
 
-	if !validators.isEmailValid(user.Email) {
+	if !validators.IsEmailValid(user.Email) {
 		return nil, errors.New(ErrorInvalidEmail)
 	}
 

@@ -2,13 +2,14 @@ package main
 
 import (
 	"os"
+
+	"github.com/DukeBWard/go_serverless/pkg/handlers"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/DukeBWard/go_serverless/pkg/handlers"
 )
 
 /**
@@ -36,15 +37,17 @@ func main() {
 	region := os.Getenv("AWS_REGION")
 	awsSession, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
-	},)
+	})
 
-	if err != nil { return }
+	if err != nil {
+		return
+	}
 
 	dynaClient = dynamodb.New(awsSession)
 	lambda.Start(handler)
 }
 
-const tableNames = "LambdaUser"
+const tableName = "LambdaUser"
 
 // first parens is what the function accepts, second is what it returns
 func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -52,13 +55,13 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 	case "GET":
 		return handlers.GetUser(req, tableName, dynaClient)
 	case "POST":
-		return handlers.createUser(req, tableName, dynaClient)
+		return handlers.CreateUser(req, tableName, dynaClient)
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
 	case "DELETE":
 		return handlers.DeleteUser(req, tableName, dynaClient)
-	}
 	default:
 		return handlers.UnhandledMethod()
+	}
 
 }
