@@ -28,7 +28,7 @@ var (
 // which allows you to put models and controllers in the same file
 
 type User struct {
-	Email     string `json:"email`
+	Email     string `json:"email"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
